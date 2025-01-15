@@ -9,3 +9,15 @@
 > It's only a `pre-alpha` beta-demo so far. We're currently waiting for **investors**.
 
 But we have active development team working on a new update 24/7.
+
+## Contribution
+[Nodejs](https://nodejs.org/en/download/) is required.
+
+```
+git clone https://github.com/Logersnamed/Moneytype.git
+```
+To install prebuilt Electron binaries, use `npm`. The preferred method is to install Electron as a development dependency in your app:
+
+```
+npm install electron --save-dev
+```
