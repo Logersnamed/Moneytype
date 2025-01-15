@@ -11,7 +11,7 @@
 But we have active development team working on a new update 24/7.
 
 ## Contribution
-To use Electron, you need to install [Node.js](https://nodejs.org/en/download/). We recommend that you use the latest LTS version available.
+To use [Electron](https://www.electronjs.org/), you need to install [Node.js](https://nodejs.org/en/download/). We recommend that you use the latest LTS version available.
 ```
 git clone https://github.com/Logersnamed/Moneytype.git
 ```
