@@ -1,21 +1,27 @@
 const { app, BrowserWindow, ipcMain } = require("electron/main");
 const path = require("node:path");
+const { loadTest } = require("./test.js");
+const { getFileData } = require("./utils.js");
+
+
+let currTestPath = "./src/tests/english.json";
 
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "src/preload.js"),
     },
   });
 
-  win.loadFile("index.html");
+  win.loadFile("src/index.html");
 };
 
 app.whenReady().then(() => {
-  ipcMain.handle("ping", () => "pong");
   createWindow();
+
+  loadTest(getFileData(currTestPath));
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -28,10 +34,4 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
-});
-
-app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
 });
