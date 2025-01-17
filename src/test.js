@@ -5,6 +5,11 @@ let activeWord = 0;
 let activeLetter = 0;
 let wordLengths = [];
 
+function setClass(element, newClass) {
+  element.classList.remove(element.className);
+  element.classList.add(newClass);
+}
+
 //if (input.key === "Backspace" && input.ctrlKey)
 //special function for backspace
 function processUserInput(input) {
@@ -23,8 +28,6 @@ function processUserInput(input) {
   }
 
   if (activeLetter >= wordLengths[activeWord] && input.key !== " " && input.key !== "Backspace") {
-
-    
     if (input.key.length !== 1) return;
     const letter = document.createElement("letter");
     letter.textContent = input.key;
@@ -44,42 +47,35 @@ function processUserInput(input) {
       --activeLetter;
       currLetterEl = currWordEl.children[activeLetter];
 
-      currLetterEl.classList.remove(currLetterEl.className);
-      currLetterEl.classList.add("untyped");
+      setClass(currLetterEl, "untyped");
     } else if (activeWord) {
-      currWordEl.classList.remove(currWordEl.className);
-      currWordEl.classList.add("word");
+      setClass(currWordEl, "word");
 
       --activeWord;
       activeLetter = wordLengths[activeWord];
 
       currWordEl = test.children[activeWord];
 
-      setActiveWord(currWordEl);
+      setClass(currWordEl, "active-word");
     }
     return;
   } else if (input.key.length !== 1) return;
 
   if (input.key === " ") {
     if (!activeLetter) return;
-    currWordEl.classList.remove(currWordEl.className);
-    currWordEl.classList.add("word");
+    setClass(currWordEl, "word");
 
     lastPrevLetter = activeLetter;
 
     ++activeWord;
     activeLetter = 0;
 
-    setActiveWord(test.children[activeWord]);
+    setClass(test.children[activeWord], "active-word");
   } else if (input.key === currLetterEl.textContent) {
-    currLetterEl.classList.remove(currLetterEl.className);
-    currLetterEl.classList.add("correct");
-
+    setClass(currLetterEl, "correct");
     ++activeLetter;
   } else if (input.key !== currLetterEl.textContent) {
-    currLetterEl.classList.remove(currLetterEl.className);
-    currLetterEl.classList.add("incorrect");
-
+    setClass(currLetterEl, "incorrect");
     ++activeLetter;
   }
 }
@@ -113,12 +109,7 @@ function loadTest(data) {
 
     wordLengths[i] = wordElement.children.length;
   }
-  setActiveWord(test.children[activeWord]);
-}
-
-function setActiveWord(element) {
-  element.classList.remove(element.className);
-  element.classList.add("active-word");
+  setClass(test.children[activeWord], "active-word");
 }
 
 window.electronAPI.onLoadTestData((data) => {
