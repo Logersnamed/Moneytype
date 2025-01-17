@@ -1,8 +1,8 @@
-// const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
-// contextBridge.exposeInMainWorld("versions", {
-//   node: () => process.versions.node,
-//   chrome: () => process.versions.chrome,
-//   electron: () => process.versions.electron,
-//   ping: () => ipcRenderer.invoke("ping"),
-// });
+contextBridge.exposeInMainWorld("electronAPI", {
+    log: (message) => ipcRenderer.invoke("console-log", message),
+    error: (message) => ipcRenderer.invoke("console-error", message),
+    onLoadTestData: (callback) => ipcRenderer.on('load-test-data', (event, data) => callback(data)),
+    getTestData: async () => await ipcRenderer.invoke("get-test-data")
+});
