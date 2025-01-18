@@ -1,6 +1,50 @@
-.test-container {
-    background-color: rgb(240, 240, 240);
+@font-face {
+    font-family: 'JetBrains-Mono';
+    src: url('./fonts/JetBrains_Mono/static/JetBrainsMono-Light.ttf');
+    font-weight: normal;
+    font-style: normal;
 }
+
+.test-container {
+
+}
+
+body {
+    background-color: rgb(18, 21, 32);
+
+    overflow: hidden;
+    margin: 0px;
+
+    font-family: 'JetBrains-Mono';
+    color: aliceblue;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* #caret {
+    display: inline-block;
+    background-color: rgb(255, 255, 255);
+    width: 3px;
+    height: 36px;
+    border-radius: 5px;
+
+    position: absolute;
+    overflow: hidden;
+} */
+
+#caret {
+    display: inline-block;
+    background-color: rgb(255, 255, 255);
+    width: 3px;
+    height: 36px;
+    border-radius: 5px;
+
+    left: 20vw;
+
+    position: absolute;
+    transition: transform 0.1s ease-in-out; /* Smooth animation */
+}
+
 
 #test {
     display: flex;
@@ -8,28 +52,29 @@
     gap: 10px;
     margin-left: 20vw;
     margin-right: 20vw;
-    color: black;
+    color: rgb(255, 255, 255);
 
-    font-size: 2rem;
+    font-size: 2em;
 }
 
 .untyped {
-    color: rgb(0, 0, 0);
+    color: rgb(227, 229, 238);
+
 }
 
 .active-word {
-    background-color: rgb(129, 129, 129);
+    /* background-color: rgb(226, 226, 226); */
 }
 
 .correct {
-    color: rgb(255, 255, 255);
+    color: rgb(103, 110, 138);
 }
 
 .incorrect {
-    color: rgb(255, 0, 0);
+    color: rgb(218, 51, 51);
 }
 
 .overflowed{
-    color: rgb(106, 11, 11);
+    color: rgb(115, 19, 19);
 
 }

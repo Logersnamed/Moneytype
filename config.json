@@ -1,0 +1,8 @@
+{
+    "test": {
+        "type": "words",
+        "path": "./src/tests/english.json",
+        "words": 5,
+        "time": 15
+    }
+}
