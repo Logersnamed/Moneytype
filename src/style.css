@@ -48,6 +48,23 @@ body {
     transition: transform 0.1s ease-in-out;
 }
 
+
+/* make timer and test as one */
+#timer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: 20vw;
+    margin-right: 20vw;
+
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+
+    color: rgb(255, 255, 255);
+
+    font-size: 2em;
+}
+
 #test {
     display: flex;
     flex-wrap: wrap;

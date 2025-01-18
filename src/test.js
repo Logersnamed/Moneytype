@@ -25,6 +25,7 @@ function handleBackscpace(input) {
   let currLetterEl = currWordEl.children[activeLetter];
   let isFirstIt = true;
 
+  // In overflow
   while (activeLetter - 1 >= wordLengths[activeWord] && (input.ctrlKey || isFirstIt)) {
     isFirstIt = false;
     --activeLetter;
@@ -105,26 +106,22 @@ let timeLeft = 0;
 var Interval;
 
 function startTimer() {
-
   clearInterval(Interval);
   Interval = setInterval(updateTime, 10);
-
-
 }
 
 function updateTime() {
   time += 1;
 
-  if (config.test.type === "time"){
-    timeLeft = config.test.time - (time / 100);
+  if (config.test.type === "time") {
+    timeLeft = config.test.time - time / 100;
     if (timeLeft <= 0) {
       stopTime();
       timeLeft = 0;
       showResults(time, activeWord + 1);
     }
     timer.innerText = timeLeft;
-  }
-  else {
+  } else {
     timer.innerText = time / 100;
   }
 }
@@ -234,10 +231,8 @@ async function loadTest(data) {
   time = 0;
   clearInterval(Interval);
 
-
   testData = data;
 
-  // const minWords = config.test.words <= maxPreloadWords ? config.test.words : minPreloadedWords;
   const minWords = config.test.words;
 
   for (let i = 0; i < minWords; i++) {

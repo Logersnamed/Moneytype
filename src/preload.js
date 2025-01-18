@@ -6,5 +6,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
     onLoadTestData: (callback) => ipcRenderer.on('load-test-data', (event, data) => callback(data)),
     getTestData: async () => await ipcRenderer.invoke("get-test-data"),
     getConfig: async () => await ipcRenderer.invoke("get-config"),
-    writeConfig: async (message) => ipcRenderer.invoke("write-config", message)
+    writeConfig: async (type, value) => ipcRenderer.invoke("write-config", type, value)
 });

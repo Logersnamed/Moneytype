@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ./src"
   },
   "author": "Oden",
   "license": "MIT",

@@ -1,32 +1,81 @@
-const ten = document.getElementById("10");
-const twentyfive = document.getElementById("25");
-const fifty = document.getElementById("50");
-const hundred = document.getElementById("100");
+const cfg_time_element = document.getElementById("cfg_time_element");
+const cfg_words_element = document.getElementById("cfg_words_element");
 
-ten.addEventListener("click", () => {
-  writeWordCfg(10);
+const opt1 = document.getElementById("opt1");
+const opt2 = document.getElementById("opt2");
+const opt3 = document.getElementById("opt3");
+const opt4 = document.getElementById("opt4");
+
+var cfg;
+
+async function setText(test_type) {
+  window.electronAPI.log(cfg);
+
+  if (test_type === "words") {
+    opt1.innerText = 10;
+    opt2.innerText = 25;
+    opt3.innerText = 50;
+    opt4.innerText = 100;
+  } else if (test_type === "time") {
+    opt1.innerText = 15;
+    opt2.innerText = 30;
+    opt3.innerText = 60;
+    opt4.innerText = 120;
+  }
+}
+
+cfg_time_element.addEventListener("click", () => {
+  (async () => {
+    await writeWordCfg("time", null);
+
+    cfg = await window.electronAPI.getConfig();
+    await setText("time");
+  })();
 });
 
-twentyfive.addEventListener("click", () => {
-  writeWordCfg(25);
+cfg_words_element.addEventListener("click", () => {
+  (async () => {
+    await writeWordCfg("words", null);
+
+    cfg = await window.electronAPI.getConfig();
+    await setText("words");
+  })();
 });
 
-fifty.addEventListener("click", () => {
-  writeWordCfg(50);
+opt1.addEventListener("click", () => {
+  writeWordCfg(cfg.test.type, opt1.textContent);
 });
 
-hundred.addEventListener("click", () => {
-  writeWordCfg(100);
+opt2.addEventListener("click", () => {
+  writeWordCfg(cfg.test.type, opt2.textContent);
 });
 
-async function writeWordCfg(words) {
+opt3.addEventListener("click", () => {
+  writeWordCfg(cfg.test.type, opt3.textContent);
+});
+
+opt4.addEventListener("click", () => {
+  writeWordCfg(cfg.test.type, opt4.textContent);
+});
+
+(async () => {
+  await window.electronAPI.log();
+
+  cfg = await window.electronAPI.getConfig();
+
+  await window.electronAPI.log(cfg.test.type);
+
+  await setText(cfg.test.type);
+})();
+
+async function writeWordCfg(t_p, v_l) {
   try {
-    await window.electronAPI.writeConfig(words);
+    await window.electronAPI.writeConfig(t_p, v_l);
 
     const testData = await window.electronAPI.getTestData();
 
     await loadTest(testData);
   } catch (error) {
-    window.electronAPI.error(`WriteWordCfg: ${error.message}`);
+    window.electronAPI.error(`1WriteWordCfg: ${error.message}`);
   }
 }

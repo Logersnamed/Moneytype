@@ -26,7 +26,7 @@ const createWindow = () => {
   });
 };
 
-function writeConfig(msg) {
+function writeConfig(type, value) {
   const fs = require("fs");
 
   return new Promise((resolve, reject) => {
@@ -39,7 +39,16 @@ function writeConfig(msg) {
 
       try {
         config = JSON.parse(data);
-        config.test.words = msg;
+        
+        if (type !== null) {
+          config.test.type = type;
+        }
+
+        if (type === "time" && value !== null) {
+          config.test.time = value;
+        } else if (type === "words" && value !== null) {
+          config.test.words = value;
+        }
 
         fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8", (writeErr) => {
           if (writeErr) {
@@ -57,14 +66,17 @@ function writeConfig(msg) {
   });
 }
 
-
 app.whenReady().then(() => {
   i = 0;
   ipcMain.handle("console-log", (event, message) => console.log(++i + ": " + message));
   ipcMain.handle("console-error", (event, message) => console.error("ERROR: " + message));
-  ipcMain.handle("get-test-data", async () => { return testData });
-  ipcMain.handle("get-config", async () => { return config });
-  ipcMain.handle("write-config", (event, message) => writeConfig(message));
+  ipcMain.handle("get-test-data", async () => {
+    return testData;
+  });
+  ipcMain.handle("get-config", async () => {
+    return config;
+  });
+  ipcMain.handle("write-config", (event, type, value) => writeConfig(type, value));
 
   createWindow();
 
