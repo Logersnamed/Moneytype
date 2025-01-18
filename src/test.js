@@ -1,10 +1,9 @@
 const test = document.getElementById("test");
 const caret = document.getElementById("caret");
+const timer = document.getElementById("timer");
 
 let testData;
 let config;
-
-let testType;
 
 let words;
 let activeWord = 0;
@@ -13,7 +12,7 @@ let wordLengths = [];
 let lastWordLetter = [];
 
 let minPreloadedWords = 10;
-let maxPreloadWords = 15;
+let maxPreloadWords = 100;
 let maxOverflow = 10;
 
 function setClass(element, newClass) {
@@ -69,6 +68,26 @@ function handleBackscpace(input) {
   }
 }
 
+function handleSpace() {
+  if (!activeLetter || activeWord + 1 >= test.children.length) return;
+
+  if ((config.test.words > maxPreloadWords && config.test.type === "words") || config.test.type === "time") {
+    preloadWords();
+  }
+
+  setClass(test.children[activeWord], "word");
+
+  activeLetter = 0;
+  ++activeWord;
+  lastWordLetter[activeWord] = activeLetter;
+
+  setClass(test.children[activeWord], "active-word");
+
+  moveCaret();
+
+  return;
+}
+
 function preloadWords() {
   if (words - activeWord < minPreloadedWords) {
     let preload = maxPreloadWords - (words - activeWord);
@@ -79,26 +98,43 @@ function preloadWords() {
   }
 }
 
+let isFirst = 1;
+let time = 0;
+let timeLeft = 0;
+
+var Interval;
+
+function startTimer() {
+
+  clearInterval(Interval);
+  Interval = setInterval(updateTime, 10);
+
+
+}
+
+function updateTime() {
+  time += 1;
+
+  if (config.test.type === "time"){
+    timeLeft = config.test.time - (time / 100);
+    if (timeLeft <= 0) {
+      stopTime();
+      timeLeft = 0;
+      showResults(time, activeWord + 1);
+    }
+    timer.innerText = timeLeft;
+  }
+  else {
+    timer.innerText = time / 100;
+  }
+}
+
+function stopTime() {
+  clearInterval(Interval);
+}
+
 function processUserInput(input) {
   let currWordEl = test.children[activeWord];
-
-  if (input.key === " ") {
-    if (!activeLetter || activeWord + 1 >= test.children.length) return;
-
-    setClass(currWordEl, "word");
-
-    ++activeWord;
-    activeLetter = 0;
-    lastWordLetter[activeWord] = activeLetter;
-
-    setClass(test.children[activeWord], "active-word");
-
-    if (testType === "time") preloadWords();
-
-    moveCaret();
-
-    return;
-  }
 
   // Handle overflow
   if (activeLetter >= wordLengths[activeWord]) {
@@ -117,6 +153,11 @@ function processUserInput(input) {
     return;
   }
 
+  if (isFirst) {
+    startTimer();
+    isFirst = 0;
+  }
+
   let currLetterEl = currWordEl.children[activeLetter];
 
   setClass(currLetterEl, input.key === currLetterEl.textContent ? "correct" : "incorrect");
@@ -127,7 +168,8 @@ function processUserInput(input) {
   moveCaret();
 
   if (activeWord + 1 >= test.children.length && activeLetter >= wordLengths[activeWord]) {
-    showResults(52, 52);
+    stopTime();
+    showResults(time, activeWord + 1);
     return;
   }
 }
@@ -168,47 +210,44 @@ function addWordToTest(word) {
   return wordElement.children.length;
 }
 
-async function loadConfig() {
-  const configData = await window.electronAPI.getConfig();
-  config = configData;
-  testType = config.test.type;
-  words = config.test.words;
-}
+async function loadTest(data) {
+  if (!data) {
+    window.electronAPI.error("loadTest data is Null for some reason");
+    return;
+  }
 
-function loadTest(data) {
-  (async () => {
-    await loadConfig();
+  config = await window.electronAPI.getConfig();
 
-    if (!data) {
-      window.electronAPI.error("ERROR: loadTest data is Null for some reason");
-      return;
-    }
+  if (!config) {
+    window.electronAPI.error("loadTest config is Null for some reason");
+    return;
+  }
 
-    if (!config) {
-      window.electronAPI.error("ERROR: loadTest config is Null for some reason");
-      return;
-    }
+  test.innerHTML = "";
+  timer.innerText = config.test.type === "time" ? config.test.time : 0;
+  activeWord = 0;
+  activeLetter = 0;
+  wordLengths = [];
+  lastWordLetter = [];
 
-    test.innerHTML = "";
-    activeWord = 0;
-    activeLetter = 0;
-    wordLengths = [];
-    lastWordLetter = [];
+  isFirst = 1;
+  time = 0;
+  clearInterval(Interval);
 
-    testData = data;
 
-    const minWords = testType === "time" ? minPreloadedWords : words;
+  testData = data;
 
-    for (let i = 0; i < minWords; i++) {
-      wordLengths[i] = addWordToTest(getRandomWord(data));
-    }
+  // const minWords = config.test.words <= maxPreloadWords ? config.test.words : minPreloadedWords;
+  const minWords = config.test.words;
 
-    words = minWords;
+  for (let i = 0; i < minWords; i++) {
+    wordLengths[i] = addWordToTest(getRandomWord(data));
+  }
 
-    setClass(test.children[activeWord], "active-word");
+  words = minWords;
 
-    moveCaret();
-  })();
+  setClass(test.children[activeWord], "active-word");
+  moveCaret();
 }
 
 window.electronAPI.onLoadTestData((data) => {

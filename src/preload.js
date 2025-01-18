@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     error: (message) => ipcRenderer.invoke("console-error", message),
     onLoadTestData: (callback) => ipcRenderer.on('load-test-data', (event, data) => callback(data)),
     getTestData: async () => await ipcRenderer.invoke("get-test-data"),
-    getConfig: async () => await ipcRenderer.invoke("get-config")
+    getConfig: async () => await ipcRenderer.invoke("get-config"),
+    writeConfig: async (message) => ipcRenderer.invoke("write-config", message)
 });

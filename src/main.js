@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require("electron/main");
 const path = require("node:path");
 const { getFileData } = require("./utils.js");
 
-let lastTestPath = "";
 let configPath = "./config.json";
 
 var testData;
@@ -22,29 +21,52 @@ const createWindow = () => {
 
   win.webContents.once("did-finish-load", () => {
     config = getFileData(configPath);
-    lastTestPath = config.test.path;
     testData = getFileData(config.test.path);
     win.webContents.send("load-test-data", testData);
   });
 };
 
-app.whenReady().then(() => {
-  ipcMain.handle('console-log', (event, message) => console.log(message));
-  ipcMain.handle('console-error', (event, message) => console.error(message));
-  ipcMain.handle("get-test-data", async () => { return testData });
-  ipcMain.handle("get-config", async () => { 
-    config = getFileData(configPath);
+function writeConfig(msg) {
+  const fs = require("fs");
 
-    if (config.test.path != lastTestPath){
-      lastTestPath = config.test.path;
-      testData = getFileData(config.test.path);
-    }
+  return new Promise((resolve, reject) => {
+    fs.readFile(configPath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading config file:", err);
+        reject(err);
+        return;
+      }
 
-    return config;
+      try {
+        config = JSON.parse(data);
+        config.test.words = msg;
+
+        fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8", (writeErr) => {
+          if (writeErr) {
+            console.error("Error writing to config file:", writeErr);
+            reject(writeErr);
+            return;
+          }
+          resolve();
+        });
+      } catch (parseErr) {
+        console.error("Error parsing JSON:", parseErr);
+        reject(parseErr);
+      }
+    });
   });
+}
+
+
+app.whenReady().then(() => {
+  i = 0;
+  ipcMain.handle("console-log", (event, message) => console.log(++i + ": " + message));
+  ipcMain.handle("console-error", (event, message) => console.error("ERROR: " + message));
+  ipcMain.handle("get-test-data", async () => { return testData });
+  ipcMain.handle("get-config", async () => { return config });
+  ipcMain.handle("write-config", (event, message) => writeConfig(message));
 
   createWindow();
-
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
