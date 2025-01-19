@@ -1,25 +1,21 @@
-const cfg_time_element = document.getElementById("cfg_time_element");
-const cfg_words_element = document.getElementById("cfg_words_element");
+const opt_elements = Array.from(document.querySelectorAll(".opt"));
+const type_element = {
+  time: document.getElementById("cfg_time_element"),
+  words: document.getElementById("cfg_words_element"),
+};
 
-const opt1 = document.getElementById("opt1");
-const opt2 = document.getElementById("opt2");
-const opt3 = document.getElementById("opt3");
-const opt4 = document.getElementById("opt4");
+const basicOptions = {
+  time: [5, 10, 20, 120],
+  words: [2, 5, 10, 100],
+};
 
 var cfg;
 
 async function setText(test_type) {
-  if (test_type === "words") {
-    opt1.innerText = 2;
-    opt2.innerText = 5;
-    opt3.innerText = 10;
-    opt4.innerText = 100;
-  } else if (test_type === "time") {
-    opt1.innerText = 5;
-    opt2.innerText = 10;
-    opt3.innerText = 20;
-    opt4.innerText = 120;
-  }
+  const options = basicOptions[test_type];
+  opt_elements.forEach((element, index) => {
+    element.innerText = options[index];
+  })
 }
 
 async function setTestType(type) {
@@ -41,29 +37,25 @@ function setTypeOption(option_element) {
   }
 }
 
-async function writeWordCfg(t_p, v_l) {
+async function writeWordCfg(type, value) {
   try {
-    await window.electronAPI.writeConfig(t_p, v_l);
+    await window.electronAPI.writeConfig(type, value);
     cfg = await window.electronAPI.getConfig();
     
     const testData = await window.electronAPI.getTestData();
     await loadTest(testData);
-    
   } catch (error) {
-    window.electronAPI.error(`1WriteWordCfg: ${error.message}`);
+    window.electronAPI.error(`WriteWordCfg: ${error.message}`);
   }
 }
 
-window.electronAPI.loadConfiguration(async () => {
-  cfg = await window.electronAPI.getConfig();
-
+window.electronAPI.loadConfiguration(async (configuration) => {
+  cfg = configuration;
   await setText(cfg.test.type);
 
-  cfg_time_element.addEventListener("click", () => { setTestType("time") });
-  cfg_words_element.addEventListener("click", () => { setTestType("words") });
-
-  opt1.addEventListener("click", () => { setTypeOption(opt1) });
-  opt2.addEventListener("click", () => { setTypeOption(opt2) });
-  opt3.addEventListener("click", () => { setTypeOption(opt3) });
-  opt4.addEventListener("click", () => { setTypeOption(opt4) });
+  type_element.time.addEventListener("click", () => { setTestType("time") });
+  type_element.words.addEventListener("click", () => { setTestType("words") });
+  opt_elements.forEach((element) => {
+    element.addEventListener("click", () => { setTypeOption(element) })
+  })
 });

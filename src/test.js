@@ -24,8 +24,7 @@ let timeLeft = 0;
 var interval;
 
 function setClass(element, newClass) {
-  element.classList.remove(element.className);
-  element.classList.add(newClass);
+  element.className = newClass;
 }
 
 function handleBackscpace(input) {
@@ -207,8 +206,6 @@ function processUserInput(input) {
 
   moveCaret();
 
-  window.electronAPI.log("Word " + activeWord + " mistake: " + wordMistakes[activeWord]);
-
   if (activeWord + 1 >= test.children.length && activeLetter >= wordLengths[activeWord] && wordMistakes[activeWord] === 0) {
     stopTime();
     showResults(time, config.test.words);
@@ -237,8 +234,12 @@ async function loadTest(data) {
     return;
   }
 
+  window.electronAPI.log("1");
+
   testData = data;
   config = await window.electronAPI.getConfig();
+
+  window.electronAPI.log("2");
 
   if (!config) {
     window.electronAPI.error("loadTest config is Null for some reason");

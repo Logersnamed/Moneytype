@@ -9,7 +9,7 @@ function showResults(time, words) {
     });
 
     const wpm_element = document.getElementById("wpm");
-    const wpm = (words / (time / 6000));
+    const wpm = words * 6000.0 / time;
     wpm_element.innerText = wpm.toFixed(2);
 
     window.electronAPI.log("Time: " + time / 100);
