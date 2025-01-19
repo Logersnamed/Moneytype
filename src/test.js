@@ -5,20 +5,23 @@ const timer = document.getElementById("timer");
 let testData;
 let config;
 
-let wordsTyped;
+let wordsInTest = 0;
+let wordLengths = [];
+let wordMistakes = [];
+
+let minPreloadWords = 10;
+let maxPreloadWords = 20;
+
 let activeWord = 0;
 let activeLetter = 0;
-let wordLengths = [];
 let lastWordLetter = [];
 
-let minPreloadedWords = 10;
-let maxPreloadWords = 100;
 let maxOverflow = 10;
 
 let isFirst = 1;
 let time = 0;
 let timeLeft = 0;
-var Interval;
+var interval;
 
 function setClass(element, newClass) {
   element.classList.remove(element.className);
@@ -34,6 +37,9 @@ function handleBackscpace(input) {
   while (activeLetter - 1 >= wordLengths[activeWord] && (input.ctrlKey || isFirstIt)) {
     isFirstIt = false;
     --activeLetter;
+
+    --wordMistakes[activeWord];
+
     --lastWordLetter[activeWord];
     currWordEl.children[activeLetter].remove();
 
@@ -47,6 +53,9 @@ function handleBackscpace(input) {
       lastWordLetter[activeWord] = activeLetter;
 
       currLetterEl = currWordEl.children[activeLetter];
+      if (currLetterEl.className === "incorrect") {
+        --wordMistakes[activeWord];
+      }
 
       setClass(currLetterEl, "untyped");
       isFirstIt = false;
@@ -74,10 +83,49 @@ function handleBackscpace(input) {
   }
 }
 
+function getRandomWord(data) {
+  let rand = Math.floor(Math.random() * data.words.length);
+
+  return data.words[rand];
+}
+
+function addWordToTest(word) {
+  const wordElement = document.createElement("div");
+  wordElement.classList.add("word");
+  test.appendChild(wordElement);
+
+  word.split("").forEach((char) => {
+    const letter = document.createElement("letter");
+    letter.textContent = char;
+    letter.classList.add("untyped");
+    wordElement.appendChild(letter);
+  });
+
+  wordMistakes[wordsInTest] = 0;
+  wordLengths[wordsInTest++] = wordElement.children.length;
+}
+
+function preloadWords() {
+  const wordLeftInTest = wordsInTest - activeWord;
+
+  if (wordLeftInTest < minPreloadWords) {
+    let preload;
+    if (config.test.type === "words") {
+      preload = config.test.words > maxPreloadWords - wordLeftInTest ? maxPreloadWords - wordLeftInTest : config.test.words;
+    } else if (config.test.type === "time") {
+      preload = maxPreloadWords - wordLeftInTest;
+    }
+
+    for (let i = 0; i < preload; ++i) {
+      addWordToTest(getRandomWord(testData));
+    }
+  }
+}
+
 function handleSpace() {
   if (!activeLetter || activeWord + 1 >= test.children.length) return;
 
-  if ((config.test.words > maxPreloadWords && config.test.type === "words") || config.test.type === "time") {
+  if ((wordsInTest < config.test.words && config.test.type === "words") || config.test.type === "time") {
     preloadWords();
   }
 
@@ -94,19 +142,9 @@ function handleSpace() {
   return;
 }
 
-function preloadWords() {
-  if (wordsTyped - activeWord < minPreloadedWords) {
-    let preload = maxPreloadWords - (wordsTyped - activeWord);
-    for (let i = 0; i < preload; ++i) {
-      addWordToTest(getRandomWord(testData));
-    }
-    wordsTyped += preload;
-  }
-}
-
 function startTimer() {
-  clearInterval(Interval);
-  Interval = setInterval(updateTime, 10);
+  clearInterval(interval);
+  interval = setInterval(updateTime, 10);
 }
 
 function updateTime() {
@@ -117,21 +155,26 @@ function updateTime() {
     if (timeLeft <= 0) {
       stopTime();
       timeLeft = 0;
-      showResults(time, activeWord + 1);
+      showResults(time, activeWord + (activeLetter >= wordLengths[activeWord] && wordMistakes[activeWord] === 0));
     }
-    timer.innerText = timeLeft;
-  } else {
-    timer.innerText = time / 100;
+    timer.innerText = timeLeft.toFixed(2);
+  } else if (config.test.type === "words") {
+    timer.innerText = (time / 100).toFixed(2);
   }
 }
 
 function stopTime() {
-  clearInterval(Interval);
+  clearInterval(interval);
 }
 
 function processUserInput(input) {
   let currWordEl = test.children[activeWord];
 
+  if (isFirst) {
+    startTimer();
+    isFirst = 0;
+  }
+  
   // Handle overflow
   if (activeLetter >= wordLengths[activeWord]) {
     if (lastWordLetter[activeWord] - wordLengths[activeWord] >= maxOverflow) return;
@@ -141,6 +184,7 @@ function processUserInput(input) {
     letter.classList.add("overflowed");
     currWordEl.appendChild(letter);
 
+    ++wordMistakes[activeWord];
     ++activeLetter;
     lastWordLetter[activeWord] = activeLetter;
 
@@ -149,23 +193,25 @@ function processUserInput(input) {
     return;
   }
 
-  if (isFirst) {
-    startTimer();
-    isFirst = 0;
-  }
-
   let currLetterEl = currWordEl.children[activeLetter];
 
-  setClass(currLetterEl, input.key === currLetterEl.textContent ? "correct" : "incorrect");
+  if (input.key === currLetterEl.textContent) {
+    setClass(currLetterEl, "correct");
+  } else {
+    setClass(currLetterEl, "incorrect");
+    ++wordMistakes[activeWord];
+  }
 
   ++activeLetter;
   lastWordLetter[activeWord] = activeLetter;
 
   moveCaret();
 
-  if (activeWord + 1 >= test.children.length && activeLetter >= wordLengths[activeWord]) {
+  window.electronAPI.log("Word " + activeWord + " mistake: " + wordMistakes[activeWord]);
+
+  if (activeWord + 1 >= test.children.length && activeLetter >= wordLengths[activeWord] && wordMistakes[activeWord] === 0) {
     stopTime();
-    showResults(time, activeWord + 1);
+    showResults(time, config.test.words);
     return;
   }
 }
@@ -185,33 +231,13 @@ function moveCaret() {
   caret.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-function getRandomWord(data) {
-  let rand = Math.floor(Math.random() * data.words.length);
-
-  return data.words[rand];
-}
-
-function addWordToTest(word) {
-  const wordElement = document.createElement("div");
-  wordElement.classList.add("word");
-  test.appendChild(wordElement);
-
-  word.split("").forEach((char) => {
-    const letter = document.createElement("letter");
-    letter.textContent = char;
-    letter.classList.add("untyped");
-    wordElement.appendChild(letter);
-  });
-
-  return wordElement.children.length;
-}
-
 async function loadTest(data) {
   if (!data) {
     window.electronAPI.error("loadTest data is Null for some reason");
     return;
   }
 
+  testData = data;
   config = await window.electronAPI.getConfig();
 
   if (!config) {
@@ -220,30 +246,24 @@ async function loadTest(data) {
   }
 
   test.innerHTML = "";
+
+  wordsInTest = 0;
+  wordLengths = [];
+  wordMistakes = [];
+
   timer.innerText = config.test.type === "time" ? config.test.time : 0;
   activeWord = 0;
   activeLetter = 0;
-  wordLengths = [];
   lastWordLetter = [];
 
   isFirst = 1;
   time = 0;
-  clearInterval(Interval);
+  clearInterval(interval);
 
-  testData = data;
-
-  const minWords = config.test.words;
-
-  for (let i = 0; i < minWords; i++) {
-    wordLengths[i] = addWordToTest(getRandomWord(data));
-  }
-
-  wordsTyped = minWords;
+  preloadWords();
 
   setClass(test.children[activeWord], "active-word");
   moveCaret();
 }
 
-window.electronAPI.onLoadTestData((data) => {
-  loadTest(data);
-});
+window.electronAPI.onLoadTestData((data) => { loadTest(data) });
