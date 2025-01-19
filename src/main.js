@@ -23,6 +23,7 @@ const createWindow = () => {
   win.webContents.once("did-finish-load", () => {
     testData = getFileData(config.test.path);
     win.webContents.send("load-test-data", testData);
+    win.webContents.send("load-configuration");
   });
 };
 

@@ -23,6 +23,7 @@ body {
 
 .configuration {
     display: flex;
+    -webkit-user-select: none;
     width: 100vw;
     justify-content: center;
     align-items: center;
@@ -48,37 +49,40 @@ body {
     transition: transform 0.1s ease-in-out;
 }
 
-
-/* make timer and test as one */
-#timer {
+.test-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    -webkit-user-select: none;
+
     margin-left: 20vw;
     margin-right: 20vw;
 
+    color: rgb(255, 255, 255);
+    font-size: 2em;
+}
+
+#timer {
     margin-top: 1vh;
     margin-bottom: 1vh;
-
-    color: rgb(255, 255, 255);
-
-    font-size: 2em;
 }
 
 #test {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-left: 20vw;
-    margin-right: 20vw;
-    color: rgb(255, 255, 255);
+}
 
-    font-size: 2em;
+#wpm {
+    font-size: 3rem;
+}
+
+.test-results {
+    display: grid;
+    margin-top: 20px;
 }
 
 .untyped {
     color: rgb(227, 229, 238);
-
 }
 
 .active-word {

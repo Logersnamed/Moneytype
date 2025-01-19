@@ -22,20 +22,17 @@ async function setText(test_type) {
   }
 }
 
-function setTestType(type) {
-  if (cfg.test.type !== type) {
-    (async () => {
-      await writeWordCfg(type, null);
-  
-      cfg = await window.electronAPI.getConfig();
-      await setText(type);
-    })();
-  }
+async function setTestType(type) {
+  if (cfg.test.type === type) return;
+
+  await writeWordCfg(type, null);
+  cfg = await window.electronAPI.getConfig();
+  await setText(type);
 }
 
 function notSameOption(type, content) {
   return  (type === "time" && content !== cfg.test.time) || 
-  (type === "words" && content !== cfg.test.words);
+          (type === "words" && content !== cfg.test.words);
 }
 
 function setTypeOption(option_element) {
@@ -47,28 +44,26 @@ function setTypeOption(option_element) {
 async function writeWordCfg(t_p, v_l) {
   try {
     await window.electronAPI.writeConfig(t_p, v_l);
-    
     cfg = await window.electronAPI.getConfig();
     
     const testData = await window.electronAPI.getTestData();
-    
     await loadTest(testData);
+    
   } catch (error) {
     window.electronAPI.error(`1WriteWordCfg: ${error.message}`);
   }
 }
 
-cfg_time_element.addEventListener("click", () => { setTestType("time") });
-cfg_words_element.addEventListener("click", () => { setTestType("words") });
-opt1.addEventListener("click", () => { setTypeOption(opt1) });
-opt2.addEventListener("click", () => { setTypeOption(opt2) });
-opt3.addEventListener("click", () => { setTypeOption(opt3) });
-opt4.addEventListener("click", () => { setTypeOption(opt4) });
-
-(async () => {
+window.electronAPI.loadConfiguration(async () => {
   cfg = await window.electronAPI.getConfig();
 
-  await window.electronAPI.log(cfg.test.type);
-
   await setText(cfg.test.type);
-})();
+
+  cfg_time_element.addEventListener("click", () => { setTestType("time") });
+  cfg_words_element.addEventListener("click", () => { setTestType("words") });
+
+  opt1.addEventListener("click", () => { setTypeOption(opt1) });
+  opt2.addEventListener("click", () => { setTypeOption(opt2) });
+  opt3.addEventListener("click", () => { setTypeOption(opt3) });
+  opt4.addEventListener("click", () => { setTypeOption(opt4) });
+});

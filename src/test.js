@@ -260,6 +260,13 @@ async function loadTest(data) {
   time = 0;
   clearInterval(interval);
 
+  document.querySelectorAll(".test-active").forEach((test_active) => {
+    test_active.style.display = "";
+  });
+  document.querySelectorAll(".test-results").forEach((test_results) => {
+    test_results.style.display = "none";
+  });
+
   preloadWords();
 
   setClass(test.children[activeWord], "active-word");
