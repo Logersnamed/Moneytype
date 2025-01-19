@@ -7,11 +7,9 @@ let configPath = "./config.json";
 var testData;
 var config;
 
-let win;
-
 const createWindow = () => {
   config = getFileData(configPath);
-  win = new BrowserWindow({
+  const win = new BrowserWindow({
     width: config.window.width,
     height: config.window.height,
     webPreferences: {
@@ -23,15 +21,10 @@ const createWindow = () => {
   win.loadFile("src/index.html");
 
   win.webContents.once("did-finish-load", () => {
-    // config = getFileData(configPath);
     testData = getFileData(config.test.path);
     win.webContents.send("load-test-data", testData);
   });
 };
-
-function loadHTML(path) {
-  win.loadFile(path);
-}
 
 function writeConfig(type, value) {
   const fs = require("fs");

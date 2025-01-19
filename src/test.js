@@ -5,7 +5,7 @@ const timer = document.getElementById("timer");
 let testData;
 let config;
 
-let words;
+let wordsTyped;
 let activeWord = 0;
 let activeLetter = 0;
 let wordLengths = [];
@@ -14,6 +14,11 @@ let lastWordLetter = [];
 let minPreloadedWords = 10;
 let maxPreloadWords = 100;
 let maxOverflow = 10;
+
+let isFirst = 1;
+let time = 0;
+let timeLeft = 0;
+var Interval;
 
 function setClass(element, newClass) {
   element.classList.remove(element.className);
@@ -90,20 +95,14 @@ function handleSpace() {
 }
 
 function preloadWords() {
-  if (words - activeWord < minPreloadedWords) {
-    let preload = maxPreloadWords - (words - activeWord);
+  if (wordsTyped - activeWord < minPreloadedWords) {
+    let preload = maxPreloadWords - (wordsTyped - activeWord);
     for (let i = 0; i < preload; ++i) {
       addWordToTest(getRandomWord(testData));
     }
-    words += preload;
+    wordsTyped += preload;
   }
 }
-
-let isFirst = 1;
-let time = 0;
-let timeLeft = 0;
-
-var Interval;
 
 function startTimer() {
   clearInterval(Interval);
@@ -239,7 +238,7 @@ async function loadTest(data) {
     wordLengths[i] = addWordToTest(getRandomWord(data));
   }
 
-  words = minWords;
+  wordsTyped = minWords;
 
   setClass(test.children[activeWord], "active-word");
   moveCaret();
