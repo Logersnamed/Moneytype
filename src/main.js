@@ -7,10 +7,13 @@ let configPath = "./config.json";
 var testData;
 var config;
 
+let win;
+
 const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+  config = getFileData(configPath);
+  win = new BrowserWindow({
+    width: config.window.width,
+    height: config.window.height,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, "/preload.js"),
@@ -20,11 +23,15 @@ const createWindow = () => {
   win.loadFile("src/index.html");
 
   win.webContents.once("did-finish-load", () => {
-    config = getFileData(configPath);
+    // config = getFileData(configPath);
     testData = getFileData(config.test.path);
     win.webContents.send("load-test-data", testData);
   });
 };
+
+function loadHTML(path) {
+  win.loadFile(path);
+}
 
 function writeConfig(type, value) {
   const fs = require("fs");
@@ -77,6 +84,7 @@ app.whenReady().then(() => {
     return config;
   });
   ipcMain.handle("write-config", (event, type, value) => writeConfig(type, value));
+  ipcMain.handle("load-html", (event, path) => loadHTML(path));
 
   createWindow();
 

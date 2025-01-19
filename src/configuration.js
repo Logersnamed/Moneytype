@@ -42,20 +42,33 @@ cfg_words_element.addEventListener("click", () => {
   })();
 });
 
+function notSameOption(type, content) {
+  return  (type === "time" && content !== cfg.test.time) || 
+          (type === "words" && content !== cfg.test.words);
+}
+
 opt1.addEventListener("click", () => {
-  writeWordCfg(cfg.test.type, opt1.textContent);
+  if (notSameOption(cfg.test.type, opt1.textContent)) {
+    writeWordCfg(cfg.test.type, opt1.textContent);
+  }
 });
 
 opt2.addEventListener("click", () => {
-  writeWordCfg(cfg.test.type, opt2.textContent);
+  if (notSameOption(cfg.test.type, opt2.textContent)) {
+    writeWordCfg(cfg.test.type, opt2.textContent);
+  }
 });
 
 opt3.addEventListener("click", () => {
-  writeWordCfg(cfg.test.type, opt3.textContent);
+  if (notSameOption(cfg.test.type, opt3.textContent)) {
+    writeWordCfg(cfg.test.type, opt3.textContent);
+  }
 });
 
 opt4.addEventListener("click", () => {
-  writeWordCfg(cfg.test.type, opt4.textContent);
+  if (notSameOption(cfg.test.type, opt4.textContent)) {
+    writeWordCfg(cfg.test.type, opt4.textContent);
+  }
 });
 
 (async () => {
@@ -71,6 +84,8 @@ opt4.addEventListener("click", () => {
 async function writeWordCfg(t_p, v_l) {
   try {
     await window.electronAPI.writeConfig(t_p, v_l);
+
+    cfg = await window.electronAPI.getConfig();
 
     const testData = await window.electronAPI.getTestData();
 
