@@ -4,9 +4,9 @@
     "height": 720
   },
   "test": {
-    "path": "./src/tests/english_450k.json",
+    "path": "./src/tests/english.json",
     "type": "words",
-    "words": "2",
-    "time": "120"
+    "words": "10",
+    "time": "5"
   }
 }

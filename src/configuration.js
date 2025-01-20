@@ -41,16 +41,14 @@ async function writeWordCfg(type, value) {
   try {
     await window.electronAPI.writeConfig(type, value);
     cfg = await window.electronAPI.getConfig();
-    
-    const testData = await window.electronAPI.getTestData();
-    await loadTest(testData);
+    await loadTest(cfg);
   } catch (error) {
     window.electronAPI.error(`WriteWordCfg: ${error.message}`);
   }
 }
 
-window.electronAPI.loadConfiguration(async (configuration) => {
-  cfg = configuration;
+window.electronAPI.loadConfiguration(async (config) => {
+  cfg = config;
   await setText(cfg.test.type);
 
   type_element.time.addEventListener("click", () => { setTestType("time") });

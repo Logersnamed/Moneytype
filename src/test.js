@@ -228,23 +228,13 @@ function moveCaret() {
   caret.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-async function loadTest(data) {
-  if (!data) {
-    window.electronAPI.error("loadTest data is Null for some reason");
+async function loadTest(cfg) {
+  if (!cfg) {
+    window.electronAPI.error("loadTest cfg is Null for some reason");
     return;
   }
 
-  window.electronAPI.log("1");
-
-  testData = data;
-  config = await window.electronAPI.getConfig();
-
-  window.electronAPI.log("2");
-
-  if (!config) {
-    window.electronAPI.error("loadTest config is Null for some reason");
-    return;
-  }
+  config = cfg;
 
   test.innerHTML = "";
 
@@ -274,4 +264,5 @@ async function loadTest(data) {
   moveCaret();
 }
 
-window.electronAPI.onLoadTestData((data) => { loadTest(data) });
+window.electronAPI.loadTestData((data) => { testData = data });
+window.electronAPI.loadTesto((cfg) => { loadTest(cfg) });

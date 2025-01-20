@@ -3,12 +3,10 @@ let escapeKey = "Escape";
 document.addEventListener("keydown", handleInput);
 
 function handleInput(input) {
-    window.electronAPI.log(input.key);
-    
     if (input.key === escapeKey) {
         (async () => {
-            const testData = await window.electronAPI.getTestData();
-            window.loadTest(testData);
+            const cfg = await window.electronAPI.getConfig();
+            window.loadTest(cfg);
         })();
     }
     else if (input.key === "Backspace"){
