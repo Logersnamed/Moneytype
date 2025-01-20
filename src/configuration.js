@@ -9,7 +9,7 @@ const basicOptions = {
   words: [2, 5, 10, 100],
 };
 
-var cfg;
+let cfg;
 
 async function setText(test_type) {
   const options = basicOptions[test_type];
@@ -18,33 +18,23 @@ async function setText(test_type) {
   })
 }
 
+async function setTypeOption(option_element) {
+  if (cfg.test[cfg.test.type] !== option_element.textContent) {
+    cfg.test[cfg.test.type] = await option_element.textContent;
+
+    await window.electronAPI.writeConfig(cfg);
+    loadTest(cfg);
+  }
+}
+
 async function setTestType(type) {
   if (cfg.test.type === type) return;
+    cfg.test.type = await type;
 
-  await writeWordCfg(type, null);
-  cfg = await window.electronAPI.getConfig();
-  await setText(type);
-}
-
-function notSameOption(type, content) {
-  return  (type === "time" && content !== cfg.test.time) || 
-          (type === "words" && content !== cfg.test.words);
-}
-
-function setTypeOption(option_element) {
-  if (notSameOption(cfg.test.type, option_element.textContent)) {
-    writeWordCfg(cfg.test.type, option_element.textContent);
-  }
-}
-
-async function writeWordCfg(type, value) {
-  try {
-    await window.electronAPI.writeConfig(type, value);
-    cfg = await window.electronAPI.getConfig();
+    await window.electronAPI.writeConfig(cfg);
     await loadTest(cfg);
-  } catch (error) {
-    window.electronAPI.error(`WriteWordCfg: ${error.message}`);
-  }
+
+    setText(type);
 }
 
 window.electronAPI.loadConfiguration(async (config) => {

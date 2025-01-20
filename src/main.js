@@ -28,44 +28,17 @@ const createWindow = () => {
   });
 };
 
-function writeConfig(type, value) {
+function writeConfig(newConfig) {
   const fs = require("fs");
 
-  return new Promise((resolve, reject) => {
-    fs.readFile(configPath, "utf8", (err, data) => {
-      if (err) {
-        console.error("Error reading config file:", err);
-        reject(err);
-        return;
-      }
-
-      try {
-        config = JSON.parse(data);
-        
-        if (type !== null) {
-          config.test.type = type;
-        }
-
-        if (type === "time" && value !== null) {
-          config.test.time = value;
-        } else if (type === "words" && value !== null) {
-          config.test.words = value;
-        }
-
-        fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8", (writeErr) => {
-          if (writeErr) {
-            console.error("Error writing to config file:", writeErr);
-            reject(writeErr);
-            return;
-          }
-          resolve();
-        });
-      } catch (parseErr) {
-        console.error("Error parsing JSON:", parseErr);
-        reject(parseErr);
-      }
-    });
+  fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), "utf8", (writeErr) => {
+    if (writeErr) {
+      console.error("Error writing to config file:", writeErr);
+      return;
+    }
   });
+  
+  config = newConfig;
 }
 
 app.whenReady().then(() => {
@@ -78,7 +51,7 @@ app.whenReady().then(() => {
   ipcMain.handle("get-config", async () => {
     return config;
   });
-  ipcMain.handle("write-config", (event, type, value) => writeConfig(type, value));
+  ipcMain.handle("write-config", (event, cfg) => writeConfig(cfg));
   ipcMain.handle("load-html", (event, path) => loadHTML(path));
 
   createWindow();

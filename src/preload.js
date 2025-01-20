@@ -8,6 +8,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     loadConfiguration: (callback) => ipcRenderer.on('load-configuration', (event, cfg) => callback(cfg)),
     getTestData: async () => await ipcRenderer.invoke("get-test-data"),
     getConfig: async () => await ipcRenderer.invoke("get-config"),
-    writeConfig: async (type, value) => ipcRenderer.invoke("write-config", type, value),
+    writeConfig: async (cfg) => ipcRenderer.invoke("write-config", cfg),
     loadHTML: async (path) => ipcRenderer.invoke("load-html", path)
 });
