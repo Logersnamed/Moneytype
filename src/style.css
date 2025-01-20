@@ -76,6 +76,10 @@ body {
     font-size: 3rem;
 }
 
+#acc {
+    font-size: 3rem;
+}
+
 .test-results {
     display: grid;
     margin-top: 20px;

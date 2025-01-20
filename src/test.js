@@ -31,11 +31,11 @@ function handleBackscpace(input) {
   let isFirstIt = true;
 
   // In overflow
-  while (activeLetter - 1 >= words[activeWord].length && (input.ctrlKey || isFirstIt)) {
+  while (activeLetter - 1 >= words[activeWord].wordLength && (input.ctrlKey || isFirstIt)) {
     isFirstIt = false;
     --activeLetter;
 
-    --words[activeWord].mistakes;
+    --words[activeWord].overflow;
 
     --words[activeWord].lastActiveLetter;
     currWordEl.children[activeLetter].remove();
@@ -51,7 +51,10 @@ function handleBackscpace(input) {
 
       currLetterEl = currWordEl.children[activeLetter];
       if (currLetterEl.className === "incorrect") {
-        --words[activeWord].mistakes;
+        words[activeWord].mistakeIds.pop();
+      }
+      else if (currLetterEl.className === "correct") {
+        words[activeWord].correctIds.pop();
       }
 
       setClass(currLetterEl, "untyped");
@@ -99,10 +102,11 @@ function addWordToTest(word) {
   });
 
   words.push({
-    length: wordElement.children.length,
+    wordLength: wordElement.children.length,
+    uniqueMistakeIds: [],
     mistakeIds: [],
+    correctIds: [],
     overflow: 0,
-    mistakes: 0,
     lastActiveLetter: 0,
     timeStart: 0,
     timeEnd: 0,
@@ -139,9 +143,16 @@ function handleSpace() {
 
   setClass(test.children[activeWord], "word");
 
+  words[activeWord].timeEnd = time;
+  words[activeWord].time = words[activeWord].timeEnd - words[activeWord].timeStart;
+  words[activeWord].speed = 6000 / time;
+
+  window.electronAPI.log(JSON.stringify(words[activeWord], null, 2));
+
   activeLetter = 0;
   ++activeWord;
   words[activeWord].lastActiveLetter = activeLetter;
+  words[activeWord].timeStart = time;
 
   setClass(test.children[activeWord], "active-word");
 
@@ -162,9 +173,12 @@ function updateTime() {
     timeLeft = config.test.time - time / 100;
     if (timeLeft <= 0) {
       stopTime();
+      words[activeWord].timeEnd = time;
+      words[activeWord].time = words[activeWord].timeEnd - words[activeWord].timeStart;
+      words[activeWord].speed = 6000 / time;
+
       timeLeft = 0;
-      // showResults(time, activeWord + (activeLetter >= words[activeWord].length && words[activeWord].mistakes === 0));
-      showResults(time, activeWord + (activeLetter >= words[activeWord].length && words[activeWord].mistakeIds.length === 0));
+      showResults(time, activeWord + (activeLetter >= words[activeWord].wordLength && words[activeWord].mistakeIds.length === 0), words);
     }
     timer.innerText = timeLeft.toFixed(2);
   } else if (config.test.type === "words") {
@@ -180,20 +194,25 @@ function processUserInput(input) {
   let currWordEl = test.children[activeWord];
 
   if (isFirst) {
+    words[0].timeStart = time;
     startTimer();
     isFirst = 0;
   }
   
   // Handle overflow
-  if (activeLetter >= words[activeWord].length) {
-    if (words[activeWord].lastActiveLetter - words[activeWord].length >= maxOverflow) return;
+  if (activeLetter >= words[activeWord].wordLength) {
+    if (words[activeWord].lastActiveLetter - words[activeWord].wordLength >= maxOverflow) return;
 
     const letter = document.createElement("letter");
     letter.textContent = input.key;
     letter.classList.add("overflowed");
     currWordEl.appendChild(letter);
 
-    ++words[activeWord].mistakes;
+    ++words[activeWord].overflow;
+    if (!words[activeWord].uniqueMistakeIds.includes(activeLetter)) {
+      words[activeWord].uniqueMistakeIds.push(activeLetter);
+    }    
+
     ++activeLetter;
     words[activeWord].lastActiveLetter = activeLetter;
 
@@ -206,9 +225,14 @@ function processUserInput(input) {
 
   if (input.key === currLetterEl.textContent) {
     setClass(currLetterEl, "correct");
+    words[activeWord].correctIds.push(activeLetter);
   } else {
     setClass(currLetterEl, "incorrect");
-    ++words[activeWord].mistakes;
+    words[activeWord].mistakeIds.push(activeLetter);
+
+    if (!words[activeWord].uniqueMistakeIds.includes(activeLetter)) {
+      words[activeWord].uniqueMistakeIds.push(activeLetter);
+    }    
   }
 
   ++activeLetter;
@@ -216,9 +240,9 @@ function processUserInput(input) {
 
   moveCaret();
 
-  if (activeWord + 1 >= test.children.length && activeLetter >= words[activeWord].length && words[activeWord].mistakes === 0) {
+  if (activeWord + 1 >= test.children.length && activeLetter >= words[activeWord].wordLength && words[activeWord].mistakeIds.length === 0) {
     stopTime();
-    showResults(time, config.test.words);
+    showResults(time, config.test.words, words);
     return;
   }
 }
