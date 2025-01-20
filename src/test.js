@@ -6,22 +6,20 @@ let testData;
 let config;
 
 let wordsInTest = 0;
-let wordLengths = [];
-let wordMistakes = [];
 
 let minPreloadWords = 10;
 let maxPreloadWords = 20;
+let maxOverflow = 10;
 
 let activeWord = 0;
 let activeLetter = 0;
-let lastWordLetter = [];
-
-let maxOverflow = 10;
 
 let isFirst = 1;
 let time = 0;
 let timeLeft = 0;
-var interval;
+let interval;
+
+let words = [];
 
 function setClass(element, newClass) {
   element.className = newClass;
@@ -33,13 +31,13 @@ function handleBackscpace(input) {
   let isFirstIt = true;
 
   // In overflow
-  while (activeLetter - 1 >= wordLengths[activeWord] && (input.ctrlKey || isFirstIt)) {
+  while (activeLetter - 1 >= words[activeWord].length && (input.ctrlKey || isFirstIt)) {
     isFirstIt = false;
     --activeLetter;
 
-    --wordMistakes[activeWord];
+    --words[activeWord].mistakes;
 
-    --lastWordLetter[activeWord];
+    --words[activeWord].lastActiveLetter;
     currWordEl.children[activeLetter].remove();
 
     moveCaret();
@@ -49,11 +47,11 @@ function handleBackscpace(input) {
     // Return to previous letter
     if (activeLetter) {
       --activeLetter;
-      lastWordLetter[activeWord] = activeLetter;
+      words[activeWord].lastActiveLetter = activeLetter;
 
       currLetterEl = currWordEl.children[activeLetter];
       if (currLetterEl.className === "incorrect") {
-        --wordMistakes[activeWord];
+        --words[activeWord].mistakes;
       }
 
       setClass(currLetterEl, "untyped");
@@ -68,7 +66,7 @@ function handleBackscpace(input) {
       setClass(currWordEl, "word");
 
       --activeWord;
-      activeLetter = lastWordLetter[activeWord];
+      activeLetter = words[activeWord].lastActiveLetter;
 
       currWordEl = test.children[activeWord];
 
@@ -100,8 +98,19 @@ function addWordToTest(word) {
     wordElement.appendChild(letter);
   });
 
-  wordMistakes[wordsInTest] = 0;
-  wordLengths[wordsInTest++] = wordElement.children.length;
+  words.push({
+    length: wordElement.children.length,
+    mistakeIds: [],
+    overflow: 0,
+    mistakes: 0,
+    lastActiveLetter: 0,
+    timeStart: 0,
+    timeEnd: 0,
+    time: 0,
+    speed: 0,
+  })
+
+  wordsInTest++;
 }
 
 function preloadWords() {
@@ -132,7 +141,7 @@ function handleSpace() {
 
   activeLetter = 0;
   ++activeWord;
-  lastWordLetter[activeWord] = activeLetter;
+  words[activeWord].lastActiveLetter = activeLetter;
 
   setClass(test.children[activeWord], "active-word");
 
@@ -154,7 +163,8 @@ function updateTime() {
     if (timeLeft <= 0) {
       stopTime();
       timeLeft = 0;
-      showResults(time, activeWord + (activeLetter >= wordLengths[activeWord] && wordMistakes[activeWord] === 0));
+      // showResults(time, activeWord + (activeLetter >= words[activeWord].length && words[activeWord].mistakes === 0));
+      showResults(time, activeWord + (activeLetter >= words[activeWord].length && words[activeWord].mistakeIds.length === 0));
     }
     timer.innerText = timeLeft.toFixed(2);
   } else if (config.test.type === "words") {
@@ -175,17 +185,17 @@ function processUserInput(input) {
   }
   
   // Handle overflow
-  if (activeLetter >= wordLengths[activeWord]) {
-    if (lastWordLetter[activeWord] - wordLengths[activeWord] >= maxOverflow) return;
+  if (activeLetter >= words[activeWord].length) {
+    if (words[activeWord].lastActiveLetter - words[activeWord].length >= maxOverflow) return;
 
     const letter = document.createElement("letter");
     letter.textContent = input.key;
     letter.classList.add("overflowed");
     currWordEl.appendChild(letter);
 
-    ++wordMistakes[activeWord];
+    ++words[activeWord].mistakes;
     ++activeLetter;
-    lastWordLetter[activeWord] = activeLetter;
+    words[activeWord].lastActiveLetter = activeLetter;
 
     moveCaret();
 
@@ -198,15 +208,15 @@ function processUserInput(input) {
     setClass(currLetterEl, "correct");
   } else {
     setClass(currLetterEl, "incorrect");
-    ++wordMistakes[activeWord];
+    ++words[activeWord].mistakes;
   }
 
   ++activeLetter;
-  lastWordLetter[activeWord] = activeLetter;
+  words[activeWord].lastActiveLetter = activeLetter;
 
   moveCaret();
 
-  if (activeWord + 1 >= test.children.length && activeLetter >= wordLengths[activeWord] && wordMistakes[activeWord] === 0) {
+  if (activeWord + 1 >= test.children.length && activeLetter >= words[activeWord].length && words[activeWord].mistakes === 0) {
     stopTime();
     showResults(time, config.test.words);
     return;
@@ -239,13 +249,11 @@ async function loadTest(cfg) {
   test.innerHTML = "";
 
   wordsInTest = 0;
-  wordLengths = [];
-  wordMistakes = [];
+  words = [];
 
   timer.innerText = config.test.type === "time" ? config.test.time : 0;
   activeWord = 0;
   activeLetter = 0;
-  lastWordLetter = [];
 
   isFirst = 1;
   time = 0;
