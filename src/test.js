@@ -7,8 +7,8 @@ let config;
 
 let wordsInTest = 0;
 
-let minPreloadWords = 10;
-let maxPreloadWords = 20;
+let minPreloadWords = 25;
+let maxPreloadWords = 50;
 let maxOverflow = 10;
 
 let activeWord = 0;
@@ -39,8 +39,6 @@ function handleBackscpace(input) {
 
     --words[activeWord].lastActiveLetter;
     currWordEl.children[activeLetter].remove();
-
-    moveCaret();
   }
 
   while (input.ctrlKey || isFirstIt) {
@@ -59,7 +57,6 @@ function handleBackscpace(input) {
 
       setClass(currLetterEl, "untyped");
       isFirstIt = false;
-      moveCaret();
 
       continue;
     }
@@ -76,8 +73,6 @@ function handleBackscpace(input) {
       setClass(currWordEl, "active-word");
       isFirstIt = false;
     }
-
-    moveCaret();
 
     return;
   }
@@ -147,7 +142,7 @@ function handleSpace() {
   words[activeWord].time = words[activeWord].timeEnd - words[activeWord].timeStart;
   words[activeWord].speed = 6000 / time;
 
-  window.electronAPI.log(JSON.stringify(words[activeWord], null, 2));
+  // window.electronAPI.log(JSON.stringify(words[activeWord], null, 2));
 
   activeLetter = 0;
   ++activeWord;
@@ -155,10 +150,6 @@ function handleSpace() {
   words[activeWord].timeStart = time;
 
   setClass(test.children[activeWord], "active-word");
-
-  moveCaret();
-
-  return;
 }
 
 function startTimer() {
@@ -216,8 +207,6 @@ function processUserInput(input) {
     ++activeLetter;
     words[activeWord].lastActiveLetter = activeLetter;
 
-    moveCaret();
-
     return;
   }
 
@@ -238,14 +227,14 @@ function processUserInput(input) {
   ++activeLetter;
   words[activeWord].lastActiveLetter = activeLetter;
 
-  moveCaret();
-
   if (activeWord + 1 >= test.children.length && activeLetter >= words[activeWord].wordLength && words[activeWord].mistakeIds.length === 0) {
     stopTime();
     showResults(time, config.test.words, words);
     return;
   }
 }
+
+let secondLine = 0;
 
 function moveCaret() {
   const isFromEnd = activeLetter - 1 >= 0; // Caret starts either at the begining of letter or at the end
@@ -257,9 +246,24 @@ function moveCaret() {
   const testRect = test.getBoundingClientRect();
 
   const x = (isFromEnd ? rect.right : rect.left) - testRect.left;
-  const y = rect.top - testRect.top;
+  const y = rect.y - testRect.y;
+  if (!secondLine) secondLine = y;
 
-  caret.style.transform = `translate(${x}px, ${y}px)`;
+  caret.style.transform = `translate(${x}px, ${ getLine() === 1 ? y : secondLine }px)`;
+  caret.style.marginTop = 0 + "px";
+}
+
+function getCurrentLetterY() {
+  const currWordEl = test.children[activeWord];
+  const targetLetterEl = currWordEl.children[0];
+  const rect = targetLetterEl.getBoundingClientRect();
+  return rect.y;
+}
+
+function moveTest(distance) {
+  const computedStyle = window.getComputedStyle(test);
+  const currMargin = parseFloat(computedStyle.marginTop);
+  test.style.marginTop = currMargin + distance + 'px';
 }
 
 async function loadTest(cfg) {
@@ -271,6 +275,8 @@ async function loadTest(cfg) {
   config = cfg;
 
   test.innerHTML = "";
+  test.style.marginTop = 0;
+  window.setLine(1);
 
   wordsInTest = 0;
   words = [];

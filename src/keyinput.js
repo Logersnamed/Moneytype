@@ -2,15 +2,24 @@ let escapeKey = "Escape";
 
 document.addEventListener("keydown", handleInput);
 
-function handleInput(input) {
+let line = 1;
+
+function setLine(num) { line = num }
+
+function getLine() { return line };
+
+async function handleInput(input) {
+    const y_before = window.getCurrentLetterY();
+    let isBackspace = false;
+
     if (input.key === escapeKey) {
-        (async () => {
-            const cfg = await window.electronAPI.getConfig();
-            window.loadTest(cfg);
-        })();
+        const cfg = await window.electronAPI.getConfig();
+        window.loadTest(cfg);
+        return;
     }
     else if (input.key === "Backspace"){
         window.handleBackscpace(input);
+        isBackspace = true;
     }
     else if (input.key === " ") {
         window.handleSpace();
@@ -18,4 +27,18 @@ function handleInput(input) {
     else if (input.key.length == 1) {
         window.processUserInput(input);
     }
+    else {
+        return;
+    }
+
+    const y_after = window.getCurrentLetterY();
+
+    if (y_after !== y_before) {
+        isBackspace ? --line : ++line;
+        if ((line !== 1 && isBackspace) || (!isBackspace && line !== 2)) {
+            window.moveTest(y_before - y_after);
+        }
+    }
+
+    window.moveCaret();
 }
