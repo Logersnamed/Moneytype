@@ -7,11 +7,14 @@ let configPath = "./config.json";
 var testData;
 var config;
 
+let win;
+
 const createWindow = () => {
   config = getFileData(configPath);
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: config.window.width,
     height: config.window.height,
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, "/preload.js"),
@@ -28,7 +31,8 @@ const createWindow = () => {
   });
 
   win.on('will-resize', () => {
-    win.webContents.send("update-visibility");
+    // Works incorrect
+    // win.webContents.send("update-visibility");
   });
   
 };
@@ -72,4 +76,12 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("app/close", () => {
+  app.quit();
+});
+
+ipcMain.on("app/minimize", () => {
+  win.minimize();
 });

@@ -27,6 +27,37 @@ body {
     height: 100vh;
 }
 
+.custom-frame {
+    -webkit-app-region: drag;
+    display: flex;
+    width: 100vw;
+    height: 35px;
+    color: aliceblue;
+    background-color: rgb(15, 17, 27);
+    justify-content: end;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 35px;
+
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover {
+    background-color: rgb(88, 88, 97);
+}
+
+#close-app:hover {
+    background-color: rgb(244, 7, 7);
+
+}
+
 .configuration {
     display: flex;
     -webkit-user-select: none;

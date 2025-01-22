@@ -3,6 +3,8 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("electronAPI", {
     log: (message) => ipcRenderer.invoke("console-log", message),
     error: (message) => ipcRenderer.invoke("console-error", message),
+    closeWindow: () => ipcRenderer.send("app/close"),
+    minimizeWindow: () => ipcRenderer.send("app/minimize"),
     loadTestData: (callback) => ipcRenderer.on('load-test-data', (event, data) => callback(data)),
     loadTesto: (callback) => ipcRenderer.on('load-test', (event, cfg) => callback(cfg)),
     uptateVisibility: (callback) => ipcRenderer.on('update-visibility', (event) => callback()),
