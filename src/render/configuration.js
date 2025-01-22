@@ -18,12 +18,24 @@ async function setText(test_type) {
   })
 }
 
+function updateOptionsButtons() {
+  for (const type in type_element) {
+    const element = type_element[type];
+    element.className = (element.textContent === cfg.test.type) ? "opt-type-selected" : "opt-type";
+  }
+
+  opt_elements.forEach((element) => {
+    element.className = (element.textContent === cfg.test[cfg.test.type]) ? "opt-selected" : "opt";
+  })
+}
+
 async function setTypeOption(option_element) {
   if (cfg.test[cfg.test.type] !== option_element.textContent) {
     cfg.test[cfg.test.type] = await option_element.textContent;
 
     await window.electronAPI.writeConfig(cfg);
     loadTest(cfg);
+    updateOptionsButtons();
   }
 }
 
@@ -35,11 +47,14 @@ async function setTestType(type) {
     await loadTest(cfg);
 
     setText(type);
+    updateOptionsButtons();
 }
 
 window.electronAPI.loadConfiguration(async (config) => {
   cfg = config;
   await setText(cfg.test.type);
+  updateOptionsButtons();
+
 
   type_element.time.addEventListener("click", () => { setTestType("time") });
   type_element.words.addEventListener("click", () => { setTestType("words") });

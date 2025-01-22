@@ -5,14 +5,12 @@
     font-style: normal;
 }
 
-.test-container {
-
-}
-
 :root {
     --color: 230;
     --saturantion: 26%;
     --lightness: 10%;
+    --fontSize: 2.3rem;
+    --bounds: 200px;
 }
 
 * {
@@ -64,34 +62,58 @@ body {
 
 }
 
+.container {
+    margin-left: var(--bounds);
+    margin-right: var(--bounds);
+}
+
 .configuration {
     display: flex;
     -webkit-user-select: none;
-    width: 100vw;
+    /* width: 100%; */
     justify-content: center;
     align-items: center;
     gap: 40px;
 
-    margin-top: 144px;
+    margin-top: 20vh;
 }
 
-.configuration span {
+.opt, .opt-type {
     cursor: pointer;
     background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.2));
+    border-radius: 5px;
 
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 10px;
     padding-right: 10px;
-
-    border-radius: 5px;
 }
+
+.opt:hover, .opt-type:hover {
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.4));
+}
+
+.opt:active, .opt-type:active {
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 2));
+}
+
+.opt-selected, .opt-type-selected {
+    /* cursor: pointer; */
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 0.8));
+    border-radius: 5px;
+
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 
 #caret {
     display: inline-block;
     background-color: rgb(255, 255, 255);
     width: 3px;
-    height: 36px;
+    height: calc(var(--fontSize) * 1.2);
     border-radius: 5px;
 
     position: absolute;
@@ -103,11 +125,8 @@ body {
     flex-wrap: wrap;
     -webkit-user-select: none;
 
-    margin-left: 256px;
-    margin-right: 256px;
-
     color: rgb(255, 255, 255);
-    font-size: 2em;
+    font-size: var(--fontSize);
     pointer-events: none;
 }
 
@@ -125,18 +144,16 @@ body {
 }
 
 letter {
-    /* background-color: brown; */
-
     margin: 0;
     padding: 0;
 }
 
 #wpm {
-    font-size: 3rem;
+    font-size: calc(var(--fontSize) * 3 / 2);
 }
 
 #acc {
-    font-size: 3rem;
+    font-size: calc(var(--fontSize) * 3 / 2);
 }
 
 .word {

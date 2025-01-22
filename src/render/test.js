@@ -21,10 +21,6 @@ let interval;
 
 let words = [];
 
-function setClass(element, newClass) {
-  element.className = newClass;
-}
-
 function handleBackscpace(input) {
   let currWordEl = test.children[activeWord];
   let currLetterEl = currWordEl.children[activeLetter];
@@ -57,7 +53,7 @@ function handleBackscpace(input) {
         words[activeWord].correctIds.pop();
       }
 
-      setClass(currLetterEl, "untyped");
+      currLetterEl.className = "untyped";
       isFirstIt = false;
 
       continue;
@@ -65,14 +61,14 @@ function handleBackscpace(input) {
 
     // Return to previous word
     if (activeWord && isFirstIt) {
-      setClass(currWordEl, "word");
+      currWordEl.className = "word";
 
       --activeWord;
       activeLetter = words[activeWord].lastActiveLetter;
 
       currWordEl = test.children[activeWord];
 
-      setClass(currWordEl, "active-word");
+      currWordEl.className = "active-word";
       isFirstIt = false;
     }
 
@@ -158,7 +154,7 @@ function handleSpace() {
     preloadWords();
   }
 
-  setClass(test.children[activeWord], "word");
+  test.children[activeWord].className = "word";
 
   words[activeWord].timeEnd = time;
   words[activeWord].time = words[activeWord].timeEnd - words[activeWord].timeStart;
@@ -171,7 +167,7 @@ function handleSpace() {
   words[activeWord].lastActiveLetter = activeLetter;
   words[activeWord].timeStart = time;
 
-  setClass(test.children[activeWord], "active-word");
+  test.children[activeWord].className = "active-word";
 }
 
 function startTimer() {
@@ -237,10 +233,10 @@ function processUserInput(input) {
   let currLetterEl = currWordEl.children[activeLetter];
 
   if (input.key === currLetterEl.textContent) {
-    setClass(currLetterEl, "correct");
+    currLetterEl.className = "correct";
     words[activeWord].correctIds.push(activeLetter);
   } else {
-    setClass(currLetterEl, "incorrect");
+    currLetterEl.className = "incorrect";
     words[activeWord].mistakeIds.push(activeLetter);
 
     if (!words[activeWord].uniqueMistakeIds.includes(activeLetter)) {
@@ -290,6 +286,7 @@ function setWordsVisibility() {
       const word = test.children[i];
       word.className = "word";
     }
+    test.children[activeWord].className = "active-word";
     return;
   }
   for (let i = 0; i < wordsInTest; ++i) {
@@ -304,6 +301,7 @@ function setWordsVisibility() {
       word.className = "invis-word"
     }
     else {
+      test.children[activeWord].className = "active-word";
       return;
     }
   }
@@ -352,7 +350,6 @@ async function loadTest(cfg) {
 
   preloadWords();
 
-  setClass(test.children[activeWord], "active-word");
   setWordsVisibility();
   moveCaret();
 }
