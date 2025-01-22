@@ -5,8 +5,8 @@ const type_element = {
 };
 
 const basicOptions = {
-  time: [5, 10, 20, 120],
-  words: [2, 5, 10, 100],
+  time: [5, 15, 60, 120],
+  words: [2, 5, 50, 100],
 };
 
 let cfg;

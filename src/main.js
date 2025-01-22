@@ -26,6 +26,11 @@ const createWindow = () => {
     win.webContents.send("load-test", config);
     win.webContents.send("load-configuration", config);
   });
+
+  win.on('will-resize', () => {
+    win.webContents.send("update-visibility");
+  });
+  
 };
 
 function writeConfig(newConfig) {

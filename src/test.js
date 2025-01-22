@@ -7,8 +7,8 @@ let config;
 
 let wordsInTest = 0;
 
-let minPreloadWords = 25;
-let maxPreloadWords = 50;
+let minPreloadWords = 250;
+let maxPreloadWords = 300;
 let maxOverflow = 10;
 
 let activeWord = 0;
@@ -39,6 +39,8 @@ function handleBackscpace(input) {
 
     --words[activeWord].lastActiveLetter;
     currWordEl.children[activeLetter].remove();
+
+    setWordsVisibility();
   }
 
   while (input.ctrlKey || isFirstIt) {
@@ -84,17 +86,37 @@ function getRandomWord(data) {
   return data.words[rand];
 }
 
+function getWordY(wordEl) { 
+  return wordEl.getBoundingClientRect().y;
+}
+
+let linesGenerated = 1;
+let linesY = [];
+
 function addWordToTest(word) {
   const wordElement = document.createElement("div");
-  wordElement.classList.add("word");
+  wordElement.classList.add("invis-word");
   test.appendChild(wordElement);
-
+  
   word.split("").forEach((char) => {
     const letter = document.createElement("letter");
     letter.textContent = char;
     letter.classList.add("untyped");
     wordElement.appendChild(letter);
   });
+
+  if (linesGenerated < 4){
+    const wordY = getWordY(wordElement)
+    
+    if (!wordsInTest) {
+      linesY.push(wordY);
+    }
+  
+    if (wordY !== linesY[linesGenerated - 1]) {
+      ++linesGenerated;
+      linesY.push(wordY)
+    }
+  }
 
   words.push({
     wordLength: wordElement.children.length,
@@ -207,6 +229,8 @@ function processUserInput(input) {
     ++activeLetter;
     words[activeWord].lastActiveLetter = activeLetter;
 
+    setWordsVisibility();
+
     return;
   }
 
@@ -260,10 +284,37 @@ function getCurrentLetterY() {
   return rect.y;
 }
 
+function setWordsVisibility() {
+  if (!linesY[2]){
+    for (let i = 0; i < wordsInTest; ++i) {
+      const word = test.children[i];
+      word.className = "word";
+    }
+    return;
+  }
+  for (let i = 0; i < wordsInTest; ++i) {
+    const word = test.children[i];
+    const wordY = getWordY(word);
+
+    // +1 cuz some lines have slightly different coords for some reason -_-
+    if (wordY >= linesY[0] - 1 && wordY <= linesY[2] + 1) {
+      word.className = "word";
+    }
+    else if (wordY <= linesY[3] + 1) {
+      word.className = "invis-word"
+    }
+    else {
+      return;
+    }
+  }
+}
+
 function moveTest(distance) {
   const computedStyle = window.getComputedStyle(test);
   const currMargin = parseFloat(computedStyle.marginTop);
   test.style.marginTop = currMargin + distance + 'px';
+
+  setWordsVisibility();
 }
 
 async function loadTest(cfg) {
@@ -280,10 +331,13 @@ async function loadTest(cfg) {
 
   wordsInTest = 0;
   words = [];
+  linesY = [];
 
   timer.innerText = config.test.type === "time" ? config.test.time : 0;
   activeWord = 0;
   activeLetter = 0;
+
+  linesGenerated = 1;
 
   isFirst = 1;
   time = 0;
@@ -299,8 +353,13 @@ async function loadTest(cfg) {
   preloadWords();
 
   setClass(test.children[activeWord], "active-word");
+  setWordsVisibility();
   moveCaret();
 }
 
 window.electronAPI.loadTestData((data) => { testData = data });
 window.electronAPI.loadTesto((cfg) => { loadTest(cfg) });
+window.electronAPI.uptateVisibility(() => { 
+  setWordsVisibility(); 
+  moveCaret();
+});

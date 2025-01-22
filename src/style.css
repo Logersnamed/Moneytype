@@ -35,7 +35,7 @@ body {
     align-items: center;
     gap: 20px;
 
-    margin-top: 20vh;
+    margin-top: 144px;
 }
 
 .configuration span {
@@ -49,8 +49,6 @@ body {
     height: 36px;
     border-radius: 5px;
 
-    left: 20vw;
-
     position: absolute;
     transition: transform 0.1s ease-in-out;
 }
@@ -60,11 +58,12 @@ body {
     flex-wrap: wrap;
     -webkit-user-select: none;
 
-    margin-left: 20vw;
-    margin-right: 20vw;
+    margin-left: 256px;
+    margin-right: 256px;
 
     color: rgb(255, 255, 255);
     font-size: 2em;
+    pointer-events: none;
 }
 
 #timer {
@@ -97,6 +96,14 @@ letter {
 
 #acc {
     font-size: 3rem;
+}
+
+.word {
+    visibility: visible;
+}
+
+.invis-word {
+    visibility: hidden;
 }
 
 .test-results {

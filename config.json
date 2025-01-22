@@ -7,6 +7,6 @@
     "path": "./src/tests/english.json",
     "type": "time",
     "words": "100",
-    "time": "10"
+    "time": "15"
   }
 }
