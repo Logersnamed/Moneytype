@@ -14,8 +14,6 @@ function showResults(time, wordsTyped, words) {
     for (let i = 0; i < wordsTyped; ++i){
         if (words[i].mistakeIds.length === 0 && words[i].overflow === 0) ++totalCorrectWords;
 
-        window.electronAPI.log("Words: " + (i + 1) + " umi: " + words[i].uniqueMistakeIds.length);
-
         totalCorrectLetters += words[i].correctIds.length - words[i].uniqueMistakeIds.length;
         totalLetters += words[i].wordLength + words[i].overflow;
     }
@@ -26,7 +24,4 @@ function showResults(time, wordsTyped, words) {
     wpm_element.innerText = wpm.toFixed(2);
     const acc = totalCorrectLetters / totalLetters;
     acc_element.innerText = acc.toFixed(2) * 100 + "%";
-
-    window.electronAPI.log("Time: " + time / 100);
-    window.electronAPI.log("Words typed: " + wordsTyped);
 }
