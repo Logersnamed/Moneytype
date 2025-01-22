@@ -9,6 +9,12 @@
 
 }
 
+:root {
+    --color: 230;
+    --saturantion: 26%;
+    --lightness: 10%;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +22,7 @@
 }
 
 body {
-    background-color: rgb(18, 21, 32);
+    background-color: hsl(var(--color), var(--saturantion), var(--lightness));
 
     overflow: hidden;
     margin: 0px;
@@ -33,7 +39,7 @@ body {
     width: 100vw;
     height: 35px;
     color: aliceblue;
-    background-color: rgb(15, 17, 27);
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 0.8));
     justify-content: end;
 }
 
@@ -67,14 +73,11 @@ body {
     gap: 40px;
 
     margin-top: 144px;
-
-
 }
 
 .configuration span {
     cursor: pointer;
-    background-color: rgb(22, 26, 39);
-    /* background-color: rgb(18, 21, 32); */
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.2));
 
     padding-top: 6px;
     padding-bottom: 6px;
@@ -121,10 +124,6 @@ body {
     margin-top: 0px;
 }
 
-.hello {
-    background-color: rgb(101, 110, 0);
-}
-
 letter {
     /* background-color: brown; */
 
@@ -158,11 +157,12 @@ letter {
 }
 
 .active-word {
-    /* background-color: rgb(226, 226, 226); */
+    background-color: hsl(var(--color), calc(var(--saturantion) * 1.1), calc(var(--lightness) * 1.2));
+    border-radius: 3px;
 }
 
 .correct {
-    color: rgb(103, 110, 138);
+    color: hsl(var(--color), calc(var(--saturantion) * 0.6), calc(var(--lightness) * 5));
 }
 
 .incorrect {
