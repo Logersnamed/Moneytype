@@ -24,7 +24,7 @@ const createWindow = () => {
   win.loadFile("src/index.html");
 
   win.once('ready-to-show', () => {
-    win.show()
+    win.show();
   })
 
   win.webContents.once("did-finish-load", () => {

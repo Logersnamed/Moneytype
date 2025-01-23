@@ -5,8 +5,8 @@
   },
   "test": {
     "path": "./src/tests/english.json",
-    "type": "time",
-    "words": 100,
-    "time": 14124
+    "type": "words",
+    "words": "10",
+    "time": 10
   }
 }

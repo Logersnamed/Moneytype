@@ -6,6 +6,9 @@ function showResults(time, wordsTyped, words) {
         test_results.style.display = "";
     });
 
+    const word_counter = document.getElementById("word-counter");
+    word_counter.style.display = "none";
+
     let totalCorrectLetters = 0;
     let totalUniqueMistakes = 0;
     let totalLetters = 0;

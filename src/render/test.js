@@ -1,6 +1,7 @@
 const test = document.getElementById("test");
 const caret = document.getElementById("caret");
 const timer = document.getElementById("timer");
+const word_counter = document.getElementById("word-counter");
 
 let testData;
 let config;
@@ -72,6 +73,8 @@ function handleBackscpace(input) {
       currWordEl = test.children[activeWord];
 
       currWordEl.className = "active-word";
+      word_counter.innerText = (activeWord + 1) + "/" + config.test.words;
+
       isFirstIt = false;
     }
 
@@ -166,6 +169,7 @@ function handleSpace() {
   words[activeWord].timeStart = time;
 
   test.children[activeWord].className = "active-word";
+  word_counter.innerText = (activeWord + 1) + "/" + config.test.words;
 }
 
 function startTimer() {
@@ -286,6 +290,7 @@ function setWordsVisibility() {
       word.className = "word";
     }
     test.children[activeWord].className = "active-word";
+    word_counter.innerText = (activeWord + 1) + "/" + config.test.words;
     return;
   }
   for (let i = 0; i < wordsInTest; ++i) {
@@ -301,6 +306,7 @@ function setWordsVisibility() {
     }
     else {
       test.children[activeWord].className = "active-word";
+      word_counter.innerText = (activeWord + 1) + "/" + config.test.words;
       return;
     }
   }
@@ -346,6 +352,14 @@ async function loadTest(cfg) {
   document.querySelectorAll(".test-results").forEach((test_results) => {
     test_results.style.display = "none";
   });
+
+  if (config.test.type === "words") {
+    word_counter.innerText = (activeWord + 1) + "/" + config.test.words;
+    word_counter.style.display = "flex";
+  }
+  else {
+    word_counter.style.display = "none";
+  }
 
   preloadWords();
 

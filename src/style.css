@@ -190,7 +190,10 @@ body {
     pointer-events: none;
 }
 
-#timer {
+.metrics {
+    display: flex;
+    gap: 100px;
+
     margin-top: 1vh;
     margin-bottom: 1vh;
 }
