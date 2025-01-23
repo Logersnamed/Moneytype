@@ -14,6 +14,7 @@ const createWindow = () => {
     width: config.window.width,
     height: config.window.height,
     frame: false,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, "/preload.js"),
@@ -21,6 +22,10 @@ const createWindow = () => {
   });
 
   win.loadFile("src/index.html");
+
+  win.once('ready-to-show', () => {
+    win.show()
+  })
 
   win.webContents.once("did-finish-load", () => {
     testData = getFileData(config.test.path);
