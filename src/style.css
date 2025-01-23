@@ -67,18 +67,33 @@ body {
     margin-right: var(--bounds);
 }
 
-.configuration {
+.configuration-container {
     display: flex;
     -webkit-user-select: none;
-    /* width: 100%; */
+    width: 100%;
     justify-content: center;
     align-items: center;
-    gap: 40px;
-
-    margin-top: 20vh;
+    
+    margin-top: 17vh;
+    margin-bottom: 20px;
 }
 
-.opt, .opt-type {
+.configuration {
+    display: flex;
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 0.85));
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
+    gap: 40px;
+
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.opt, .opt-type, .custom-opt {
     cursor: pointer;
     background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.2));
     border-radius: 5px;
@@ -89,25 +104,70 @@ body {
     padding-right: 10px;
 }
 
-.opt:hover, .opt-type:hover {
+.opt:hover, .opt-type:hover, .custom-opt:hover {
     background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.4));
 }
 
-.opt:active, .opt-type:active {
+.opt:active, .opt-type:active, .custom-opt:active {
     background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 2));
 }
 
-.opt-selected, .opt-type-selected {
+.opt-selected, .opt-type-selected, .custom-opt-selected {
     /* cursor: pointer; */
-    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 0.8));
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 0.85));
     border-radius: 5px;
 
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 10px;
     padding-right: 10px;
+
+    color: aliceblue;
 }
 
+.custom-opt {
+    color: aliceblue;
+}
+
+.custom-popup {
+    display: none;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+
+    z-index: 100;
+
+    align-items: center;
+    justify-content: center;
+    
+
+    /* opacity: 20%;
+    background-color: rgb(0, 0, 0); */
+}
+
+.custom-selector {
+    /* position: fixed; */
+
+    z-index: 101;
+
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.4));
+    opacity: 100%;
+
+    width: 300px;
+    height: 240px;
+
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.septum {
+    background-color: hsl(var(--color), var(--saturantion), calc(var(--lightness) * 1.4));
+    width: 5px;
+    height: calc(var(--fontSize) / 1.7);
+    border-radius: 5px;
+}
 
 #caret {
     display: inline-block;

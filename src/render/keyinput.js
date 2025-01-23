@@ -3,12 +3,17 @@ let escapeKey = "Escape";
 document.addEventListener("keydown", handleInput);
 
 let line = 1;
+let inputDisabled = false;
 
 function setLine(num) { line = num }
 
 function getLine() { return line };
 
+function disableInput(opt) {inputDisabled = opt};
+
 async function handleInput(input) {
+    if (inputDisabled) return;
+
     const y_before = window.getCurrentLetterY();
     let isBackspace = false;
 

@@ -293,11 +293,11 @@ function setWordsVisibility() {
     const word = test.children[i];
     const wordY = getWordY(word);
 
-    // +1 cuz some lines have slightly different coords for some reason -_-
-    if (wordY >= linesY[0] - 1 && wordY <= linesY[2] + 1) {
+    // +-10 cuz some lines have slightly different coords for some reason -_-
+    if (wordY >= linesY[0] - 10 && wordY <= linesY[2] + 10) {
       word.className = "word";
     }
-    else if (wordY <= linesY[3] + 1) {
+    else if (wordY <= linesY[3] + 10) {
       word.className = "invis-word"
     }
     else {
