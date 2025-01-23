@@ -6,7 +6,7 @@
   "test": {
     "path": "./src/tests/english.json",
     "type": "time",
-    "words": 4,
-    "time": "100"
+    "words": 100,
+    "time": 14124
   }
 }

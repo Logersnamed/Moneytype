@@ -7,6 +7,9 @@ let config;
 
 let wordsInTest = 0;
 
+let linesGenerated = 1;
+let linesY = [];
+
 let minPreloadWords = 250;
 let maxPreloadWords = 300;
 let maxOverflow = 10;
@@ -77,17 +80,13 @@ function handleBackscpace(input) {
 }
 
 function getRandomWord(data) {
-  let rand = Math.floor(Math.random() * data.words.length);
-
+  const rand = Math.floor(Math.random() * data.words.length);
   return data.words[rand];
 }
 
 function getWordY(wordEl) { 
   return wordEl.getBoundingClientRect().y;
 }
-
-let linesGenerated = 1;
-let linesY = [];
 
 function addWordToTest(word) {
   const wordElement = document.createElement("div");
@@ -137,7 +136,8 @@ function preloadWords() {
     let preload;
     if (config.test.type === "words") {
       preload = config.test.words > maxPreloadWords - wordLeftInTest ? maxPreloadWords - wordLeftInTest : config.test.words;
-    } else if (config.test.type === "time") {
+    } 
+    else if (config.test.type === "time") {
       preload = maxPreloadWords - wordLeftInTest;
     }
 
@@ -159,8 +159,6 @@ function handleSpace() {
   words[activeWord].timeEnd = time;
   words[activeWord].time = words[activeWord].timeEnd - words[activeWord].timeStart;
   words[activeWord].speed = 6000 / time;
-
-  // window.electronAPI.log(JSON.stringify(words[activeWord], null, 2));
 
   activeLetter = 0;
   ++activeWord;
@@ -190,7 +188,8 @@ function updateTime() {
       showResults(time, activeWord + (activeLetter >= words[activeWord].wordLength && words[activeWord].mistakeIds.length === 0), words);
     }
     timer.innerText = timeLeft.toFixed(2);
-  } else if (config.test.type === "words") {
+  } 
+  else if (config.test.type === "words") {
     timer.innerText = (time / 100).toFixed(2);
   }
 }

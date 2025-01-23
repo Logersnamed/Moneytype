@@ -1,15 +1,14 @@
-let escapeKey = "Escape";
-
 document.addEventListener("keydown", handleInput);
 
+let escapeKey = "Escape";
 let line = 1;
 let inputDisabled = false;
 
-function setLine(num) { line = num }
+function setLine(value) { line = value }
 
-function getLine() { return line };
+function getLine() { return line }
 
-function disableInput(opt) {inputDisabled = opt};
+function disableTestInput(disable) {inputDisabled = disable}
 
 async function handleInput(input) {
     if (inputDisabled) return;
@@ -37,7 +36,6 @@ async function handleInput(input) {
     }
 
     const y_after = window.getCurrentLetterY();
-
     if (y_after !== y_before) {
         isBackspace ? --line : ++line;
         if ((line !== 1 && isBackspace) || (!isBackspace && line !== 2)) {
