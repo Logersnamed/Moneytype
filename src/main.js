@@ -23,6 +23,9 @@ const createWindow = () => {
 
   win.loadFile("src/index.html");
 
+  // For inspect
+  win.webContents.openDevTools();
+
   win.once('ready-to-show', () => {
     win.show();
   })
