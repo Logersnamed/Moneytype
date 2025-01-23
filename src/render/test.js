@@ -351,6 +351,7 @@ async function loadTest(cfg) {
   });
   document.querySelectorAll(".test-results").forEach((test_results) => {
     test_results.style.display = "none";
+    test_results.style.visibility = "hidden";
   });
 
   if (config.test.type === "words") {

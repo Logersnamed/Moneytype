@@ -4,6 +4,7 @@ function showResults(time, wordsTyped, words) {
     });
     document.querySelectorAll(".test-results").forEach((test_results) => {
         test_results.style.display = "";
+        test_results.style.visibility = "visible";
     });
 
     const word_counter = document.getElementById("word-counter");

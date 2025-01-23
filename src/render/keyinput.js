@@ -11,12 +11,12 @@ function getLine() { return line }
 function disableTestInput(disable) {inputDisabled = disable}
 
 async function handleInput(input) {
-    if (inputDisabled) return;
+    if (inputDisabled || input.metaKey || input.altKey) return;
 
     const y_before = window.getCurrentLetterY();
     let isBackspace = false;
 
-    if (input.key === escapeKey) {
+    if (input.key === escapeKey  && !input.ctrlKey) {
         const cfg = await window.electronAPI.getConfig();
         window.loadTest(cfg);
         return;
@@ -25,10 +25,10 @@ async function handleInput(input) {
         window.handleBackscpace(input);
         isBackspace = true;
     }
-    else if (input.key === " ") {
+    else if (input.key === " " && !input.ctrlKey) {
         window.handleSpace();
     }
-    else if (input.key.length == 1) {
+    else if (input.key.length == 1 && !input.ctrlKey) {
         window.processUserInput(input);
     }
     else {
