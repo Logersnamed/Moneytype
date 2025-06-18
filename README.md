@@ -10,6 +10,10 @@
 
 But we have active development team working on a new update 24/7.
 
+## Shoutout
+
+I will lift the veil of secrecy, the project was inpired by [Monkeytype](https://monkeytype.com/). Also I took a word list from this site for a while.
+
 ## Instalation
 
 1. Get latest release in Releases section.
