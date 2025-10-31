@@ -19,7 +19,7 @@ I will lift the veil of secrecy, the project was inpired by [Monkeytype](https:/
 1. Get latest release in Releases section.
 2. Run installer.
 2. Wait till this ugly green pop-up disappears.
-3. Type.
+3. You can find .exe by following path: %localappdata%/moneytype/app-1.0.0/moneytype.exe.
 
 ## Contribution
 To use [Electron](https://www.electronjs.org/), you need to install [Node.js](https://nodejs.org/en/download/). We recommend that you use the latest LTS version available.
